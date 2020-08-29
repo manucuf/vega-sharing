@@ -15,7 +15,7 @@ Per altre distro vedere: https://nodejs.org/en/download/package-manager/
 
 ### Installazione di mongodb 
 Ubuntu: https://docs.mongodb.com/manual/tutorial/install-mongodb-on-ubuntu/ <br>
-WSL2: 
+WSL2: https://docs.microsoft.com/it-it/windows/wsl/tutorials/wsl-database#install-mongodb
 
 ### Installazione di Heroku CLI
 Windows e macOS: https://devcenter.heroku.com/articles/heroku-cli <br>
