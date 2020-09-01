@@ -14,10 +14,7 @@ export class UserController {
 
   @Get()
   public login(@Body() body: LoginPayload) {
-     const retrievedUser = this.userService.findOne(body.email);
-     if (retrievedUser) return retrievedUser;
-    // const validatedUser = validate(this.authenticationService.validate(retrievedUser);
-    // return validatedUser;
+     return this.userService.findOne(body.email, body.password);
   }
 
 }

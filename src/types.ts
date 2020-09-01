@@ -1,6 +1,6 @@
 export type UserPayload = {
   name: string;
-  lastname: number;
+  lastname: string;
   password: string;
   email: string;
 }
@@ -12,6 +12,6 @@ export type LoginPayload = {
 
 export type UserPayloadResponse = {
   name: string;
-  lastname: number;
+  lastname: string;
   email: string;
 }
