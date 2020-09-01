@@ -12,9 +12,4 @@ export class UserController {
     return this.userService.create(body)
   }
 
-  @Get()
-  public login(@Body() body: LoginPayload) {
-     return this.userService.findOne(body.email, body.password);
-  }
-
 }

@@ -2,18 +2,15 @@ import { Injectable } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { User } from '../schemas/user.schema';
-import { UserPayloadResponse, UserPayload } from '../types';
-import * as bcrypt from 'bcrypt'
-import { AuthenticationService } from '../authentication/authentication.service';
+import { UserPayload } from '../types';
+import * as bcrypt from 'bcrypt';
 
 
 @Injectable()
 export class UserService {
 
   constructor(
-    @InjectModel(User.name) private userModel: Model<User>,
-    private readonly authenticationService: AuthenticationService
-  ) {}
+    @InjectModel(User.name) private userModel: Model<User>) {}
 
   async create(userPayload: UserPayload): Promise<User> {
     userPayload.password = await bcrypt.hash(userPayload.password, 10);
@@ -21,24 +18,18 @@ export class UserService {
     return createdUser.save();
   }
 
-  async findOne(email: string, password: string): Promise<UserPayloadResponse | object> {
+  async passwordMatches(user, password): Promise<boolean> {
+    return bcrypt.compare(password, user.password);
+  }
+  async findUserByEmailAndPassword(email: string, password: string): Promise<User | undefined> {
     const retrievedUser = await this.userModel.findOne({ email : email });
-    if (!retrievedUser) return {
-      "status" : 404,
-      "error" : "user not found"
-    };
 
-    const validatedUser = await this.authenticationService.validate(password, retrievedUser.password);
-    if (!validatedUser) return {
-      "status" : 401,
-      "error" : "wrong password"
-    };
-
-    return {
-      email : retrievedUser.email,
-      name : retrievedUser.name,
-      lastname : retrievedUser.lastname
-    };
+    if (retrievedUser && (await this.passwordMatches(retrievedUser, password))) {
+      console.log(retrievedUser);
+      return retrievedUser;
+    } else {
+      return undefined;
+    }
 
   }
 
