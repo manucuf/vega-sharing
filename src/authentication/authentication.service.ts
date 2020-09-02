@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 //import { JwtService } from '@nestjs/jwt';
-import * as bcrypt from 'bcrypt'
 import { User } from '../schemas/user.schema';
 import { UserService } from '../user/user.service';
 
@@ -15,12 +14,6 @@ export class AuthenticationService {
     private readonly userService: UserService
     //private jwtService: JwtService
   ) {}
-
-  // async createToken(user: User): Promise<IToken> {
-  //   return {
-  //     accessToken: this.jwtService.sign({ id: user.id, role: user.role }),
-  //     refreshToken: (await this.generateRefreshtoken(user))
-  // }
 
   //async login(email: string, password: string): Promise<IToken | undefined> {
   async login(email: string, password: string): Promise<User | undefined> {

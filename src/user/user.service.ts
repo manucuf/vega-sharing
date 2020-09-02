@@ -21,11 +21,11 @@ export class UserService {
   async passwordMatches(user, password): Promise<boolean> {
     return bcrypt.compare(password, user.password);
   }
+
   async findUserByEmailAndPassword(email: string, password: string): Promise<User | undefined> {
     const retrievedUser = await this.userModel.findOne({ email : email });
 
     if (retrievedUser && (await this.passwordMatches(retrievedUser, password))) {
-      console.log(retrievedUser);
       return retrievedUser;
     } else {
       return undefined;
