@@ -30,7 +30,14 @@ export class UserService {
     } else {
       return undefined;
     }
-
   }
 
+  async findById(id: string): Promise<User | undefined> {
+    const retrievedUser = await this.userModel.findById(id);
+    if (retrievedUser) {
+      return retrievedUser;
+    } else {
+      return undefined;
+    }
+  }
 }

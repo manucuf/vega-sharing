@@ -1,10 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '../schemas/user.schema';
 import { UserService } from '../user/user.service';
-import { UserToken, IJwtPayload, IRefreshToken, UserPayload, UserPayloadResponse} from '../types';
+import { IJwtPayload, IRefreshToken, UserPayloadResponse, UserToken } from '../types';
 import { RefreshToken } from '../schemas/refreshToken.schema';
 
 import * as crypto from 'crypto';
@@ -19,15 +19,16 @@ export class AuthenticationService {
     @InjectModel(RefreshToken.name) private refreshTokenModel: Model<RefreshToken>)  {}
 
   async login(email: string, password: string): Promise<UserPayloadResponse | undefined> {
-  //async login(email: string, password: string): Promise<User | undefined> {
     const user = await this.userService.findUserByEmailAndPassword(email, password);
-    return {
+    if (user) return {
       name: user.name,
       lastname: user.lastname,
       email: user.email,
       token: await this.createToken(user)
+    };
+    else {
+      throw new NotFoundException();
     }
-    //return await this.userService.findUserByEmailAndPassword(email, password);
   }
 
 
@@ -43,23 +44,26 @@ export class AuthenticationService {
     };
   }
 
-  // public async refreshAccessToken(dto: RefreshTokenDto): Promise<UserToken> {
-  //   const result = await this.refreshToken.findOne({
-  //     token: dto.refreshToken,
-  //     userId: new ObjectId(dto.userId),
-  //   });
-  //   if (!result) {
-  //     throw new UnauthorizedException('RefreshToken not found');
-  //   } else if (result.expires < new Date()) {
-  //     throw new UnauthorizedException('RefreshToken expired');
-  //   }
-  //   const user = await this.usersService.findById(dto.userId);
-  //   if (!user) {
-  //     throw new NotFoundException();
-  //   }
-  //   const deleted = await this.refreshToken.deleteOne(result);
-  //   return this.createToken(user);
-  // }
+  public async refreshAccessToken(dto: IRefreshToken): Promise<UserToken> {
+
+    const result = await this.refreshTokenModel.findOne({
+      token: dto.token
+      //userId: new ObjectId(dto.userId),
+    });
+
+    if (!result) {
+      throw new UnauthorizedException('RefreshToken not found');
+    } else if (result.expires < new Date()) {
+      throw new UnauthorizedException('RefreshToken expired');
+    }
+
+    const user = await this.userService.findById(result.userId);
+    if (!user) {
+      throw new NotFoundException();
+    }
+    await this.refreshTokenModel.deleteOne(result);
+    return this.createToken(user);
+  }
 
   private async generateRefreshToken(user: User): Promise<IRefreshToken> {
     const userId = user.id;
