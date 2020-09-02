@@ -1,12 +1,9 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { AuthenticationService, IToken } from './authentication.service';
+import { AuthenticationService} from './authentication.service';
 import { User } from '../schemas/user.schema';
-import { LoginPayload } from '../types';
+import { LoginPayload, UserPayloadResponse } from '../types';
 
-export class AuthResponse {
-  token: IToken;
-  user: Pick<User, 'id' | 'name' | 'email' >;
-}
+
 
 @Controller('authentication')
 export class AuthenticationController {
@@ -14,8 +11,8 @@ export class AuthenticationController {
   constructor(private readonly authService: AuthenticationService) {}
 
   @Post('login')
-  //async login(@Body() loginPayload: LoginPayload): Promise<AuthResponse> {
-  async login(@Body() loginPayload: LoginPayload): Promise<User | undefined> {
+  async login(@Body() loginPayload: LoginPayload): Promise<UserPayloadResponse> {
+  //async login(@Body() loginPayload: LoginPayload): Promise<User | undefined> {
     return await this.authService.login(loginPayload.email, loginPayload.password);
   }
 

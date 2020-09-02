@@ -1,43 +1,47 @@
 import { Injectable } from '@nestjs/common';
-//import { JwtService } from '@nestjs/jwt';
+import { Model } from 'mongoose';
+import { InjectModel } from '@nestjs/mongoose';
+import { JwtService } from '@nestjs/jwt';
 import { User } from '../schemas/user.schema';
 import { UserService } from '../user/user.service';
+import { UserToken, IJwtPayload, IRefreshToken, UserPayload, UserPayloadResponse} from '../types';
+import { RefreshToken } from '../schemas/refreshToken.schema';
 
-export interface IToken {
-  accessToken: string;
-  refreshToken: string
-}
+import * as crypto from 'crypto';
+import * as moment from 'moment';
+
 
 @Injectable()
 export class AuthenticationService {
   constructor(
-    private readonly userService: UserService
-    //private jwtService: JwtService
-  ) {}
+    private readonly userService: UserService,
+    private jwtService: JwtService,
+    @InjectModel(RefreshToken.name) private refreshTokenModel: Model<RefreshToken>)  {}
 
-  //async login(email: string, password: string): Promise<IToken | undefined> {
-  async login(email: string, password: string): Promise<User | undefined> {
-    //const user = await this.userService.findUserByEmailAndPassword(email, password);
-    //return this.createToken(user);
-    return await this.userService.findUserByEmailAndPassword(email, password);
+  async login(email: string, password: string): Promise<UserPayloadResponse | undefined> {
+  //async login(email: string, password: string): Promise<User | undefined> {
+    const user = await this.userService.findUserByEmailAndPassword(email, password);
+    return {
+      name: user.name,
+      lastname: user.lastname,
+      email: user.email,
+      token: await this.createToken(user)
+    }
+    //return await this.userService.findUserByEmailAndPassword(email, password);
   }
 
 
-  // private async createToken(user: User): Promise<UserToken> {
-  //   const jwtPayload: IJwtPayload = {
-  //     role: user.role,
-  //     id: user.id,
-  //     sub: user.id,
-  //   };
-  //   return {
-  //     accessToken: this.jwtService.sign(jwtPayload),
-  //     refreshToken: (await this.generateRefreshToken(user)).token,
-  //     expiresIn: moment()
-  //       .add(this.configService.getJwtExpirationMinutes() * 60, 'minutes')
-  //       .toDate(),
-  //     tokenType: 'Bearer',
-  //   };
-  // }
+  private async createToken(user: User): Promise<UserToken> {
+    const jwtPayload: IJwtPayload = {
+      id: user.id
+    };
+    return {
+      accessToken: this.jwtService.sign(jwtPayload),
+      refreshToken: (await this.generateRefreshToken(user)).token,
+      expiresIn: moment().add(/*this.configService.getJwtExpirationMinutes() * 60 */ 300, 'minutes').toDate(),
+      tokenType: 'Bearer',
+    };
+  }
 
   // public async refreshAccessToken(dto: RefreshTokenDto): Promise<UserToken> {
   //   const result = await this.refreshToken.findOne({
@@ -56,20 +60,19 @@ export class AuthenticationService {
   //   const deleted = await this.refreshToken.deleteOne(result);
   //   return this.createToken(user);
   // }
-  // private async generateRefreshToken(user: User): Promise<IRefreshToken> {
-  //   const userId = user.id;
-  //   const token = `${userId}.${crypto.randomBytes(40).toString('hex')}`;
-  //   const expires = moment()
-  //     .add(this.configService.getRefreshTokenExpirationDays(), 'days')
-  //     .toDate();
-  //   const refreshToken = await this.refreshToken.create({
-  //     userId,
-  //     email: user.email,
-  //     token,
-  //     expires,
-  //   });
-  //   return refreshToken;
-  // }
 
+  private async generateRefreshToken(user: User): Promise<IRefreshToken> {
+    const userId = user.id;
+
+    const token = `${userId}.${crypto.randomBytes(40).toString('hex')}`;
+    const expires = moment().add(/* this.configService.getRefreshTokenExpirationDays()*/ 120, 'days').toDate();
+    const createdRefreshToken = new this.refreshTokenModel({
+      userId,
+      email: user.email,
+      token,
+      expires,
+    });
+    return createdRefreshToken.save();
+  }
 
 }
