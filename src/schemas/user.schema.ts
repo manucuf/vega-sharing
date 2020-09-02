@@ -3,7 +3,7 @@ import { Document } from 'mongoose';
 
 @Schema()
 export class User extends Document {
-  @Prop()
+  @Prop({ required: true})
   name: string;
 
   @Prop()
@@ -12,7 +12,7 @@ export class User extends Document {
   @Prop()
   password: string;
 
-  @Prop()
+  @Prop({ required: true })
   email: string;
 }
 

@@ -1,13 +1,12 @@
+import { User } from './schemas/user.schema';
+
+type SafeUser = Pick<User, "email" | 'id' | 'name' | 'lastname'>
+
 export type UserPayload = {
   name: string;
   lastname: string;
   password: string;
   email: string;
-}
-
-export type LoginPayload = {
-  email: string;
-  password: string;
 }
 
 export type UserToken = {
@@ -18,13 +17,9 @@ export type UserToken = {
 }
 
 export type UserPayloadResponse = {
-  name: string;
-  lastname: string;
-  email: string;
+  user: SafeUser,
   token: UserToken;
 }
-
-
 
 export interface IJwtPayload  {
   id: string;

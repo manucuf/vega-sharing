@@ -4,11 +4,12 @@ import { InjectModel } from '@nestjs/mongoose';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '../schemas/user.schema';
 import { UserService } from '../user/user.service';
-import { IJwtPayload, IRefreshToken, UserPayloadResponse, UserToken } from '../types';
+import { IJwtPayload, IRefreshToken, UserToken } from '../types';
 import { RefreshToken } from '../schemas/refreshToken.schema';
 
 import * as crypto from 'crypto';
 import * as moment from 'moment';
+import { AuthenticationError, ErrorType } from './AuthenticationError';
 
 
 @Injectable()
@@ -18,16 +19,14 @@ export class AuthenticationService {
     private jwtService: JwtService,
     @InjectModel(RefreshToken.name) private refreshTokenModel: Model<RefreshToken>)  {}
 
-  async login(email: string, password: string): Promise<UserPayloadResponse | undefined> {
+  async login(email: string, password: string): Promise<{user: User, token: UserToken} | undefined> {
     const user = await this.userService.findUserByEmailAndPassword(email, password);
     if (user) return {
-      name: user.name,
-      lastname: user.lastname,
-      email: user.email,
+      user,
       token: await this.createToken(user)
     };
     else {
-      throw new NotFoundException();
+      throw new AuthenticationError('User not found', ErrorType.NOT_FOUND);
     }
   }
 
