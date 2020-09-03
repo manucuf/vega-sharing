@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { Injectable} from '@nestjs/common';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { JwtService } from '@nestjs/jwt';
@@ -10,7 +10,7 @@ import { RefreshToken } from '../schemas/refreshToken.schema';
 import * as crypto from 'crypto';
 import * as moment from 'moment';
 import { AuthenticationError, ErrorType } from './AuthenticationError';
-
+import { UserPayloadDto } from './dto/AuthenticationDto';
 
 @Injectable()
 export class AuthenticationService {
@@ -19,6 +19,16 @@ export class AuthenticationService {
     private jwtService: JwtService,
     @InjectModel(RefreshToken.name) private refreshTokenModel: Model<RefreshToken>)  {}
 
+
+  async register(userPayload: UserPayloadDto): Promise<User> {
+    const foundUser = await this.userService.findByEmail(userPayload.email);
+    if(foundUser) {
+      throw new AuthenticationError('User already existing', ErrorType.EMAIL_ALREADY_TAKEN); 
+    } else {
+      return await this.userService.create(userPayload);
+    }
+  }
+
   async login(email: string, password: string): Promise<{user: User, token: UserToken} | undefined> {
     const user = await this.userService.findUserByEmailAndPassword(email, password);
     if (user) return {
@@ -26,7 +36,7 @@ export class AuthenticationService {
       token: await this.createToken(user)
     };
     else {
-      throw new AuthenticationError('User not found', ErrorType.NOT_FOUND);
+      throw new AuthenticationError('Email or password not valid', ErrorType.NOT_FOUND);
     }
   }
 
@@ -51,14 +61,14 @@ export class AuthenticationService {
     });
 
     if (!result) {
-      throw new UnauthorizedException('RefreshToken not found');
+      throw new AuthenticationError('RefreshToken not found', ErrorType.REFRESH_TOKEN_NOT_FOUND);
     } else if (result.expires < new Date()) {
-      throw new UnauthorizedException('RefreshToken expired');
+      throw new AuthenticationError('RefreshToken expired', ErrorType.REFRESH_TOKEN_EXPIRED);
     }
 
     const user = await this.userService.findById(result.userId);
     if (!user) {
-      throw new NotFoundException();
+      throw new AuthenticationError('User not found', ErrorType.NOT_FOUND);
     }
     await this.refreshTokenModel.deleteOne(result);
     return this.createToken(user);

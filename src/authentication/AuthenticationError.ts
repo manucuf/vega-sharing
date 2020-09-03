@@ -4,6 +4,8 @@ export enum ErrorType {
   INVALID_CREDENTIALS,
   UNKNOWN,
   REFRESH_TOKEN_NOT_FOUND,
+  REFRESH_TOKEN_EXPIRED,
+  EMAIL_ALREADY_TAKEN,
 }
 export class AuthenticationError extends Error {
   public type: ErrorType;
