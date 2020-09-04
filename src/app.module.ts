@@ -10,10 +10,10 @@ import { AuthenticationModule } from './authentication/authentication.module';
   imports: [
     ConfigModule.forRoot({
       envFilePath: ['.env.development.local', '.env.development'],
+      isGlobal: true
     }),
     UserModule,
-    //MongooseModule.forRoot('mongodb://localhost/vega-sharing'),
-    MongooseModule.forRoot('mongodb+srv://VEGAUser:[vega123]@clustervega.auwef.mongodb.net/VEGADB?retryWrites=true&w=majority'),
+    MongooseModule.forRoot(process.env.DATABASE_URI),
     AuthenticationModule
   ],
   controllers: [AppController],
