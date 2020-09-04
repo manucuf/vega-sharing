@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
@@ -9,11 +9,20 @@ import { AuthenticationModule } from './authentication/authentication.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: ['.env.development.local', '.env.development'],
-      isGlobal: true
+      ignoreEnvFile: process.env.NODE_ENV === 'staging' || process.env.NODE_ENV === 'production',
+      envFilePath: ['.env.development.local'],
+      isGlobal: true,
+
     }),
     UserModule,
-    MongooseModule.forRoot(process.env.DATABASE_URI),
+    MongooseModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: function (configService: ConfigService) {
+        return {
+          uri: configService.get<string>('DATABASE_URI')
+        }
+      }
+    }),
     AuthenticationModule
   ],
   controllers: [AppController],

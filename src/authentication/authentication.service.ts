@@ -11,12 +11,14 @@ import * as crypto from 'crypto';
 import * as moment from 'moment';
 import { AuthenticationError, ErrorType } from './AuthenticationError';
 import { UserPayloadDto } from './dto/AuthenticationDto';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthenticationService {
   constructor(
     private readonly userService: UserService,
     private jwtService: JwtService,
+    private configService: ConfigService,
     @InjectModel(RefreshToken.name) private refreshTokenModel: Model<RefreshToken>)  {}
 
 
@@ -48,7 +50,7 @@ export class AuthenticationService {
     return {
       accessToken: this.jwtService.sign(jwtPayload),
       refreshToken: (await this.generateRefreshToken(user)).token,
-      expiresIn: moment().add(/*this.configService.getJwtExpirationMinutes() * 60 */ 300, 'minutes').toDate(),
+      expiresIn: moment().add(this.configService.get<string>('JWT_EXPIRATION'), 'minutes').toDate(),
       tokenType: 'Bearer',
     };
   }
@@ -78,7 +80,7 @@ export class AuthenticationService {
     const userId = user.id;
 
     const token = `${userId}.${crypto.randomBytes(40).toString('hex')}`;
-    const expires = moment().add(/* this.configService.getRefreshTokenExpirationDays()*/ 120, 'days').toDate();
+    const expires = moment().add(this.configService.get<string>('JWT_REFRESH_EXPIRATION'), 'days').toDate();
     const createdRefreshToken = new this.refreshTokenModel({
       userId,
       email: user.email,

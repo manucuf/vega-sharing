@@ -13,6 +13,7 @@ export class AuthenticationController {
   @Post('login')
   async login(@Body() loginPayload: LoginPayloadDto): Promise<UserPayloadResponseDto | undefined> {
     try {
+
       const { user, token } = await this.authService.login(loginPayload.email, loginPayload.password);
       return {
         token,
