@@ -2,10 +2,10 @@ import { Injectable} from '@nestjs/common';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { JwtService } from '@nestjs/jwt';
-import { User } from '../schemas/user.schema';
+import { User } from '../user/schema/user.schema';
 import { UserService } from '../user/user.service';
 import { IJwtPayload, IRefreshToken, UserToken } from '../types';
-import { RefreshToken } from '../schemas/refreshToken.schema';
+import { RefreshToken } from './schema/refreshToken.schema';
 
 import * as crypto from 'crypto';
 import * as moment from 'moment';

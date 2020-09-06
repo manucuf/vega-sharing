@@ -8,7 +8,6 @@ export class LoginPayloadDto {
 }
 
 
-
 export class UserPayloadResponseDto {
   user: SafeUser;
   token: UserToken;

@@ -1,4 +1,4 @@
-import { User } from './schemas/user.schema';
+import { User } from './user/schema/user.schema';
 
 export type SafeUser = Pick<User, "email" | 'id' | 'name' | 'lastname'>
 

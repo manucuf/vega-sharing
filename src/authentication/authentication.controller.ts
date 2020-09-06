@@ -1,6 +1,6 @@
  import { BadRequestException, Body, Controller, InternalServerErrorException, Post } from '@nestjs/common';
 import { AuthenticationService} from './authentication.service';
-import {  IRefreshToken, UserToken } from '../types';
+import { IRefreshToken, UserToken } from '../types';
 import { pick } from 'lodash';
  import { LoginPayloadDto, UserPayloadResponseDto, UserPayloadDto } from './dto/AuthenticationDto';
  import { AuthenticationError } from './AuthenticationError';
