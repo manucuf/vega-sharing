@@ -9,11 +9,11 @@ export class Session extends Document {
   @Prop()
   description: string;
 
-  @Prop({ required: true })
-  creator: { type: Types.ObjectId, ref: 'User'};
+  @Prop({ type: Types.ObjectId, ref: 'User' })
+  creator: any;
 
-  @Prop({ required: true })
-  room: { type: Types.ObjectId, ref: 'Room'};
+  @Prop({ type: Types.ObjectId, ref: 'Room' })
+  room: any;
 
 }
 

@@ -9,11 +9,11 @@ export class Room extends Document {
   @Prop()
   description: string;
 
-  @Prop()
-  users: [{ type: Types.ObjectId, ref: 'User'}];
+  @Prop({ type: Types.ObjectId, ref: 'User'})
+  creator: any;
 
-  @Prop({ required: true })
-  creator: { type: Types.ObjectId, ref: 'User'};
+  @Prop({ type: [Types.ObjectId], ref: 'User'})
+  users: any;
 
 }
 
