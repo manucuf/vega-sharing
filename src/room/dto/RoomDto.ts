@@ -1,8 +1,6 @@
-import {SafeUser} from '../../types';
-
 export class RoomDto {
   name: string;
   description: string;
-  users: SafeUser[];
-  creator: SafeUser;
+  userIds: string[];
+  creatorId: string;
 }
