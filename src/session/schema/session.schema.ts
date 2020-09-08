@@ -15,9 +15,8 @@ export class Session extends Document {
   //creator: { type: Types.ObjectId, ref: 'User'};
   @Prop({ type: Types.ObjectId, ref: 'User' })
   creatorId: any;
-  //@Prop({ type: Types.ObjectId, ref: 'Room' })
-  //@Prop()
-  //room: any;
+  @Prop({ type: Types.ObjectId, ref: 'Room' })
+  roomId: any;
 
 }
 

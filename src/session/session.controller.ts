@@ -1,8 +1,9 @@
-import { InternalServerErrorException, BadRequestException, Controller, Body, Post } from '@nestjs/common';
+import { InternalServerErrorException, NotFoundException, BadRequestException, Controller, Body, Post, Get, Param } from '@nestjs/common';
 import { SessionDto } from './dto/SessionDto';
 import { SessionService } from './session.service';
 import { SessionError } from './SessionError';
 import {Session} from './schema/session.schema'
+import { ServerHttp2Session } from 'http2';
 
 @Controller('session')
 export class SessionController { //gestisci non esistenza di user e room, collegamento db chisa se funziona
@@ -12,7 +13,7 @@ export class SessionController { //gestisci non esistenza di user e room, colleg
     @Post('create')
     async create(@Body() body: SessionDto): Promise<Session> {
         try {
-            const createdSession = await this.sessionService.create(body.name, body.description, body.creatorId/*, body.roomId*/); //SISTEMA CON I CAMPI
+            const createdSession = await this.sessionService.create(body.name, body.description, body.creatorId, body.roomId); //SISTEMA CON I CAMPI
             return createdSession;
         } catch (exception) {
             if (exception instanceof SessionError) {
@@ -25,4 +26,14 @@ export class SessionController { //gestisci non esistenza di user e room, colleg
             }
         }
     }
+
+    @Get(':id')
+    async getRoomsByUserId(@Param('id') id): Promise< Pick<Session, "_id" | "name" | "description" | "creatorId" | "roomId">[] | undefined> {
+        try {
+            return await this.sessionService.getSessionsByRoomId(id);
+        } catch (ex) {
+            throw new NotFoundException();
+        }
+    }
+
 }

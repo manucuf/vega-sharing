@@ -8,8 +8,8 @@ export class SessionDto {
   description: string;
   @IsNotEmpty()
   creatorId: string; //Safeuser //string
-  //@IsNotEmpty()
-  //roomId: string; //room dto
+  @IsNotEmpty()
+  roomId: string; //room dto
 }
 
 //cambiato il dto: non c'era modo di risalire all'id della room da room dto

@@ -26,12 +26,21 @@ export class RoomService {
       path: 'users',
       model: 'User'
     }).lean();
-
+    
     if(retrievedRooms) {
       return retrievedRooms.map((room) => ({
         ...room,
         users: room.users.map(u => pick(u, ['_id', 'name', 'lastname', 'email']))
       }));
+    } else {
+      return undefined;
+    }
+  }
+
+  async findById(id: string): Promise<Room | undefined> {
+    const retrievedRoom = await this.roomModel.findById(id);
+    if (retrievedRoom) {
+      return retrievedRoom;
     } else {
       return undefined;
     }
