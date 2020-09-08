@@ -18,7 +18,7 @@ export class RoomController {
   }
 
   @Get(':id')
-  async getRoomsByUserId(@Param('id') id): Promise<Room[]> {
+  async getRoomsByUserId(@Param('id') id): Promise< Pick<Room, "_id" | "name" | "description" | "creator" | "users">[]> {
     try {
       return await this.roomService.getRoomsByUserId(id);
     } catch (ex) {

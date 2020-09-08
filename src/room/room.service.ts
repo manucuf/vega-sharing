@@ -10,28 +10,28 @@ export class RoomService {
 
   constructor(@InjectModel(Room.name) private roomModel: Model<Room>) {}
 
-  async create(name: string, description: string, users: string[], creator: string): Promise<Room> {
+  async create(name: string, description: string, userIds: string[], creatorId: string): Promise<Room> {
+
     const createdRoom = new this.roomModel({
       name,
       description,
-      users,
-      creator : new ObjectId(creator)
+      users: userIds,
+      creator : new ObjectId(creatorId)
     });
     return createdRoom.save();
   }
 
-  async getRoomsByUserId(id: string) : Promise<Room[] | undefined> {
+  async getRoomsByUserId(id: string) : Promise< Pick<Room, "_id" | "name" | "description" | "creator" | "users">[] | undefined> {
     const retrievedRooms = await this.roomModel.find({users : id}).populate({
       path: 'users',
       model: 'User'
-    });
+    }).lean();
+
     if(retrievedRooms) {
-      retrievedRooms.forEach( (room, i) => {
-        retrievedRooms[i].users.forEach((user, j) => {
-          retrievedRooms[i].users[j] = pick(user, ['id', 'name', 'lastname', 'email']);
-        });
-      })
-      return retrievedRooms;
+      return retrievedRooms.map((room) => ({
+        ...room,
+        users: room.users.map(u => pick(u, ['_id', 'name', 'lastname', 'email']))
+      }));
     } else {
       return undefined;
     }
