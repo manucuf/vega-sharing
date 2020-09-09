@@ -43,7 +43,7 @@ export class AuthenticationService {
   }
 
 
-  private async createToken(user: User): Promise<UserToken> {
+  async createToken(user: User): Promise<UserToken> {
     const jwtPayload: IJwtPayload = {
       id: user.id
     };

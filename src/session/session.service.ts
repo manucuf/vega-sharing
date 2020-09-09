@@ -28,16 +28,24 @@ export class SessionService {
         if(!room) {
             throw new SessionError('Room Id not found', ErrorType.INVALID_ROOM);
         }
-        const createdSession = new this.sessionModel( {
-            name,
-            description,
-            creator : new ObjectId(creatorId),
-            room: new ObjectId(roomId)
-        });
-        return createdSession.save();
+        const userRooms = await this.roomService.getRoomsByUserId(creatorId);
+        const result = await this.roomService.checkRoomInRooms(roomId, userRooms);
+        if(result == true) {
+          const createdSession = new this.sessionModel( {
+              name,
+              description,
+              creator : new ObjectId(creatorId),
+              room: new ObjectId(roomId)
+          });
+          return createdSession.save();
+        } else {
+          throw new SessionError("Declared creatorId is not in the room with roomId", ErrorType.USER_NOT_IN_THE_ROOM);
+        }
+        
             
     }
 
+    
     async getSessionsByRoomId(id: string) : Promise<Pick<Session, "_id" | "name" | "description" | "creator" | "room">[] | undefined> {
         const retrievedSessions = await this.sessionModel.find({room : new ObjectId(id)}).populate({
           path: 'creator',

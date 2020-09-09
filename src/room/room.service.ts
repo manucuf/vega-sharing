@@ -53,4 +53,23 @@ export class RoomService {
     }
   }
 
+  async checkRoomInRooms(roomId: string, rooms: Pick<Room, "_id" | "name" | "description" | "creator" | "users">[]): Promise<boolean> {
+    /*let result = false;
+    rooms.forEach( (room) => {
+      if(String(room._id) == roomId) {
+        result = true;
+        return;
+      }
+    });
+    return result;*/
+
+    
+    return Object.keys(rooms).some(function(k) {return rooms[k]._id == roomId;}); 
+    //------------------------------------ATTENZIONE ATTENZIONE--------------------------------------------------
+    //------------------------------------ATTENZIONE ATTENZIONE--------------------------------------------------
+    //Dario, verifica che questa funzione faccia ESATTAMENTE la stessa cosa che fa il codice commentato di sopra
+    //------------------------------------ATTENZIONE ATTENZIONE--------------------------------------------------
+    //------------------------------------ATTENZIONE ATTENZIONE--------------------------------------------------
+  }
+
 }
