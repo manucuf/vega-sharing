@@ -1,7 +1,9 @@
-import { Body, Controller, Get, InternalServerErrorException, NotFoundException, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, InternalServerErrorException, BadRequestException, NotFoundException, Param, Post } from '@nestjs/common';
 import { RoomService } from './room.service';
 import { RoomDto } from './dto/RoomDto';
 import { Room } from './schema/room.schema';
+import { RoomError } from './RoomError';
+
 
 @Controller('room')
 export class RoomController {
@@ -12,8 +14,15 @@ export class RoomController {
   async create(@Body() body: RoomDto): Promise<Room> {
     try {
       return await this.roomService.create(body.name, body.description, body.userIds, body.creatorId);
-    } catch (ex) {
-      throw new InternalServerErrorException();
+    } catch (exception) {
+      if (exception instanceof RoomError) {
+        throw new BadRequestException({
+            message: exception.message,
+            type: exception.type
+        })
+    } else {
+        throw new InternalServerErrorException("Errore sconosciuto");
+    }
     }
   }
 

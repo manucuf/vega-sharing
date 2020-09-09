@@ -6,18 +6,12 @@ import { Document, Types } from 'mongoose';
 export class Session extends Document {
   @Prop({ required: true })
   name: string;
-  
   @Prop()
   description: string;
-
-  //@Prop({ required: true })
-  //@Prop()
-  //creator: { type: Types.ObjectId, ref: 'User'};
   @Prop({ type: Types.ObjectId, ref: 'User' })
-  creatorId: any;
+  creator: any;
   @Prop({ type: Types.ObjectId, ref: 'Room' })
-  roomId: any;
-
+  room: any;
 }
 
 export const SessionSchema = SchemaFactory.createForClass(Session);

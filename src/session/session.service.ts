@@ -31,20 +31,24 @@ export class SessionService {
         const createdSession = new this.sessionModel( {
             name,
             description,
-            creatorId : new ObjectId(creatorId),
-            roomId: new ObjectId(roomId)
+            creator : new ObjectId(creatorId),
+            room: new ObjectId(roomId)
         });
         return createdSession.save();
             
     }
 
-    async getSessionsByRoomId(id: string) : Promise<Pick<Session, "_id" | "name" | "description" | "creatorId" | "roomId">[] | undefined> {
-        const retrievedSessions = await this.sessionModel.find({roomId : new ObjectId(id)}).populate({
-          path: 'creatorId',
+    async getSessionsByRoomId(id: string) : Promise<Pick<Session, "_id" | "name" | "description" | "creator" | "room">[] | undefined> {
+        const retrievedSessions = await this.sessionModel.find({room : new ObjectId(id)}).populate({
+          path: 'creator',
           model: 'User',
         }).lean();
         
         if(retrievedSessions) {
+          return retrievedSessions.map((session) => ({
+            ...session,
+            creator: pick(session.creator, ['_id', 'name', 'lastname', 'email'])
+          }));
           return retrievedSessions;
         } else {
           return undefined;

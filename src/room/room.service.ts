@@ -4,14 +4,21 @@ import { Room } from './schema/room.schema';
 import { Model } from 'mongoose';
 import { ObjectId } from 'bson';
 import { pick } from 'lodash';
+import { UserService } from '../user/user.service';
+import { RoomError, ErrorType } from './RoomError';
+
 
 @Injectable()
 export class RoomService {
 
-  constructor(@InjectModel(Room.name) private roomModel: Model<Room>) {}
+  constructor(@InjectModel(Room.name) private roomModel: Model<Room>,
+    private readonly userService: UserService) {}
 
   async create(name: string, description: string, userIds: string[], creatorId: string): Promise<Room> {
-
+    const user = await this.userService.findById(creatorId);
+    if(!user) {
+      throw new RoomError('Creator Id not found', ErrorType.INVALID_USER);
+    }
     const createdRoom = new this.roomModel({
       name,
       description,

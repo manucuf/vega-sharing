@@ -2,18 +2,17 @@ import { InternalServerErrorException, NotFoundException, BadRequestException, C
 import { SessionDto } from './dto/SessionDto';
 import { SessionService } from './session.service';
 import { SessionError } from './SessionError';
-import {Session} from './schema/session.schema'
-import { ServerHttp2Session } from 'http2';
+import {Session} from './schema/session.schema';
 
 @Controller('session')
-export class SessionController { //gestisci non esistenza di user e room, collegamento db chisa se funziona
+export class SessionController { 
 
     constructor(private readonly sessionService: SessionService) {}
 
     @Post('create')
     async create(@Body() body: SessionDto): Promise<Session> {
         try {
-            const createdSession = await this.sessionService.create(body.name, body.description, body.creatorId, body.roomId); //SISTEMA CON I CAMPI
+            const createdSession = await this.sessionService.create(body.name, body.description, body.creatorId, body.roomId);
             return createdSession;
         } catch (exception) {
             if (exception instanceof SessionError) {
@@ -28,7 +27,7 @@ export class SessionController { //gestisci non esistenza di user e room, colleg
     }
 
     @Get(':id')
-    async getRoomsByUserId(@Param('id') id): Promise< Pick<Session, "_id" | "name" | "description" | "creatorId" | "roomId">[] | undefined> {
+    async getSessionsByRoomId(@Param('id') id): Promise< Pick<Session, "_id" | "name" | "description" | "creator" | "room">[] | undefined> {
         try {
             return await this.sessionService.getSessionsByRoomId(id);
         } catch (ex) {
