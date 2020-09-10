@@ -2,6 +2,7 @@ import {SafeUser} from '../../types';
 import { RoomDto } from '../../room/dto/RoomDto';
 import {IsNotEmpty} from 'class-validator';
 
+
 export class SessionDto {
   @IsNotEmpty()
   name: string;
