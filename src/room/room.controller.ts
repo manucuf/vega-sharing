@@ -1,11 +1,21 @@
-import { Body, Controller, Get, InternalServerErrorException, BadRequestException, NotFoundException, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  InternalServerErrorException,
+  BadRequestException,
+  NotFoundException,
+  Param,
+  Post,
+  Query, Req,
+} from '@nestjs/common';
 import { RoomService } from './room.service';
 import { RoomDto } from './dto/RoomDto';
 import { Room } from './schema/room.schema';
 import { RoomError } from './RoomError';
 
 
-@Controller('room')
+@Controller('rooms')
 export class RoomController {
 
   constructor(private readonly roomService: RoomService) {}
@@ -26,10 +36,11 @@ export class RoomController {
     }
   }
 
-  @Get(':id')
-  async getRoomsByUserId(@Param('id') id): Promise< Pick<Room, "_id" | "name" | "description" | "creator" | "users">[]> {
+
+  @Get('/')
+  async getRoomsByUserId(@Req() res, @Query() params): Promise< Pick<Room, "_id" | "name" | "description" | "creator" | "users">[]> {
     try {
-      return await this.roomService.getRoomsByUserId(id);
+      return await this.roomService.getRoomsByUserId(params.userId);
     } catch (ex) {
       throw new NotFoundException();
     }
