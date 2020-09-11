@@ -7,6 +7,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { RefreshToken, RefreshTokenSchema } from 'src/authentication/schema/refreshToken.schema';
 import { ConfigService } from '@nestjs/config';
 import { JwtStrategy } from './jwt.strategy';
+import { PassportModule } from '@nestjs/passport';
 
 @Module({
   imports: [UserModule,
@@ -15,7 +16,7 @@ import { JwtStrategy } from './jwt.strategy';
               useFactory: (configService: ConfigService) => {
                 return {
                   secret: configService.get<string>('JWT_SECRET'),
-                  signOptions: { expiresIn: configService.get<string>('JWT_EXPIRATION')}
+                  signOptions: { expiresIn: parseInt(configService.get<string>('JWT_EXPIRATION')) * 60 }
                 }
               }
             }),
@@ -24,6 +25,7 @@ import { JwtStrategy } from './jwt.strategy';
               signOptions: { expiresIn: '60s' },
             }),*/
             MongooseModule.forFeature([{ name: RefreshToken.name, schema: RefreshTokenSchema }]),
+          PassportModule.register({ defaultStrategy: 'jwt', session: false}),
            ],
   providers: [AuthenticationService, JwtStrategy],
   exports: [AuthenticationService],

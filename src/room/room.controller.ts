@@ -21,7 +21,7 @@ export class RoomController {
 
   constructor(private readonly roomService: RoomService) {}
 
-  //@UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Post('create')
   async create(@Body() body: RoomDto): Promise<Room> {
     try {
