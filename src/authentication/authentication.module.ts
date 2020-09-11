@@ -6,6 +6,7 @@ import { UserModule } from '../user/user.module';
 import { JwtModule } from '@nestjs/jwt';
 import { RefreshToken, RefreshTokenSchema } from 'src/authentication/schema/refreshToken.schema';
 import { ConfigService } from '@nestjs/config';
+import { JwtStrategy } from './jwt.strategy';
 
 @Module({
   imports: [UserModule,
@@ -24,7 +25,7 @@ import { ConfigService } from '@nestjs/config';
             }),*/
             MongooseModule.forFeature([{ name: RefreshToken.name, schema: RefreshTokenSchema }]),
            ],
-  providers: [AuthenticationService],
+  providers: [AuthenticationService, JwtStrategy],
   exports: [AuthenticationService],
   controllers: [AuthenticationController]
 })

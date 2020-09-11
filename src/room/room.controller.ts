@@ -7,12 +7,13 @@ import {
   NotFoundException,
   Param,
   Post,
-  Query, Req,
+  Query, Req, UseGuards,
 } from '@nestjs/common';
 import { RoomService } from './room.service';
 import { RoomDto } from './dto/RoomDto';
 import { Room } from './schema/room.schema';
 import { RoomError } from './RoomError';
+import {JwtAuthGuard} from '../authentication/jwt-auth.guard';
 
 
 @Controller('rooms')
@@ -20,6 +21,7 @@ export class RoomController {
 
   constructor(private readonly roomService: RoomService) {}
 
+  //@UseGuards(JwtAuthGuard)
   @Post('create')
   async create(@Body() body: RoomDto): Promise<Room> {
     try {
