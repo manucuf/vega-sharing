@@ -38,7 +38,7 @@ export class RoomController {
     }
   }
 
-
+  @UseGuards(JwtAuthGuard)
   @Get('/')
   async getRoomsByUserId(@Req() res, @Query() params): Promise< Pick<Room, "_id" | "name" | "description" | "creator" | "users">[]> {
     try {
