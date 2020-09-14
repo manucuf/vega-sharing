@@ -1,10 +1,10 @@
-import { InternalServerErrorException, NotFoundException, BadRequestException, Controller, Body, Post, Get, Param } from '@nestjs/common';
+import { InternalServerErrorException, NotFoundException, BadRequestException, Controller, Body, Post, Get, Req, Query } from '@nestjs/common';
 import { SessionDto } from './dto/SessionDto';
 import { SessionService } from './session.service';
 import { SessionError } from './SessionError';
 import {Session} from './schema/session.schema';
 
-@Controller('session')
+@Controller('sessions')
 export class SessionController { 
 
     constructor(private readonly sessionService: SessionService) {}
@@ -26,10 +26,10 @@ export class SessionController {
         }
     }
 
-    @Get(':id')
-    async getSessionsByRoomId(@Param('id') id): Promise< Pick<Session, "_id" | "name" | "description" | "creator" | "room">[] | undefined> {
+    @Get('/')
+    async getSessionsByRoomId(@Req() res, @Query() params): Promise< Pick<Session, "_id" | "name" | "description" | "creator" | "room">[] | undefined> {
         try {
-            return await this.sessionService.getSessionsByRoomId(id);
+            return await this.sessionService.getSessionsByRoomId(params.roomId);
         } catch (ex) {
             throw new NotFoundException();
         }

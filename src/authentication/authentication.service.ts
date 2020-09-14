@@ -47,6 +47,7 @@ export class AuthenticationService {
     const jwtPayload: IJwtPayload = {
       id: user.id
     };
+    //const jwtPayload = { username: user.email, sub: user.id };
     return {
       accessToken: this.jwtService.sign(jwtPayload),
       refreshToken: (await this.generateRefreshToken(user)).token,
