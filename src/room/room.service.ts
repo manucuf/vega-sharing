@@ -33,14 +33,13 @@ export class RoomService {
       path: 'users',
       model: 'User'
     }).lean();
-    
     if(retrievedRooms) {
       return retrievedRooms.map((room) => ({
         ...room,
         users: room.users.map(u => pick(u, ['_id', 'name', 'lastname', 'email']))
       }));
     } else {
-      return undefined;
+      return [];
     }
   }
 
