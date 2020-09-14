@@ -53,7 +53,7 @@ export class UserService {
     const retrievedUsers = await this.userModel.find({
         $or: [{name: {"$regex": substring, "$options": "i"}}, {lastname: {"$regex": substring, "$options": "i"}}, {email: {"$regex": substring, "$options": "i"}}]
       }
-    );
+    ).limit(20);
 
     if (retrievedUsers) {
       return retrievedUsers.map(u => pick(u, ['_id', 'name', 'lastname', 'email']));
