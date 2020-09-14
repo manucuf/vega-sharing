@@ -1,19 +1,31 @@
-import { InternalServerErrorException, NotFoundException, BadRequestException, Controller, Body, Post, Get, Param } from '@nestjs/common';
+import {
+    BadRequestException,
+    Body,
+    Controller,
+    Get,
+    InternalServerErrorException,
+    NotFoundException,
+    Post,
+    Query,
+    Req,
+    UseGuards,
+} from '@nestjs/common';
 import { SessionDto } from './dto/SessionDto';
 import { SessionService } from './session.service';
 import { SessionError } from './SessionError';
-import {Session} from './schema/session.schema';
+import { Session } from './schema/session.schema';
+import { JwtAuthGuard } from '../authentication/jwt-auth.guard';
 
-@Controller('session')
+@Controller('sessions')
 export class SessionController { 
 
     constructor(private readonly sessionService: SessionService) {}
 
+    @UseGuards(JwtAuthGuard)
     @Post('create')
     async create(@Body() body: SessionDto): Promise<Session> {
         try {
-            const createdSession = await this.sessionService.create(body.name, body.description, body.creatorId, body.roomId);
-            return createdSession;
+            return await this.sessionService.create(body.name, body.description, body.creatorId, body.roomId);
         } catch (exception) {
             if (exception instanceof SessionError) {
                 throw new BadRequestException({
@@ -26,10 +38,11 @@ export class SessionController {
         }
     }
 
-    @Get(':id')
-    async getSessionsByRoomId(@Param('id') id): Promise< Pick<Session, "_id" | "name" | "description" | "creator" | "room">[] | undefined> {
+    @UseGuards(JwtAuthGuard)
+    @Get('/')
+    async getSessionsByRoomId(@Req() res, @Query() params): Promise< Pick<Session, "_id" | "name" | "description" | "creator" | "room">[] | undefined> {
         try {
-            return await this.sessionService.getSessionsByRoomId(id);
+            return await this.sessionService.getSessionsByRoomId(params.roomId);
         } catch (ex) {
             throw new NotFoundException();
         }

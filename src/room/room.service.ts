@@ -29,7 +29,7 @@ export class RoomService {
   }
 
   async getRoomsByUserId(id: string) : Promise< Pick<Room, "_id" | "name" | "description" | "creator" | "users">[] | undefined> {
-    const retrievedRooms = await this.roomModel.find({users : id}).populate({
+    const retrievedRooms = await this.roomModel.find({ $or: [{users : id}, {creator: new ObjectId(id)}]}).populate({
       path: 'users',
       model: 'User'
     }).lean();

@@ -4,6 +4,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { User } from './schema/user.schema';
 import * as bcrypt from 'bcrypt';
 import { UserPayloadDto } from './dto/UserPayloadDto';
+import { pick } from 'lodash';
 
 @Injectable()
 export class UserService {
@@ -43,6 +44,19 @@ export class UserService {
     const retrievedUser = await this.userModel.findById(id);
     if (retrievedUser) {
       return retrievedUser;
+    } else {
+      return undefined;
+    }
+  }
+
+  async getUsersFromSubstring(substring: string): Promise<Pick<User, "_id" | "name" | "lastname" | "email">[] | undefined> {
+    const retrievedUsers = await this.userModel.find({
+        $or: [{name: {"$regex": substring, "$options": "i"}}, {lastname: {"$regex": substring, "$options": "i"}}, {email: {"$regex": substring, "$options": "i"}}]
+      }
+    );
+
+    if (retrievedUsers) {
+      return retrievedUsers.map(u => pick(u, ['_id', 'name', 'lastname', 'email']));
     } else {
       return undefined;
     }
