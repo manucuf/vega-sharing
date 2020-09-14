@@ -51,7 +51,10 @@ export class AuthenticationController {
   async register(@Body() body: UserPayloadDto) {
     try {
       const registeredUser = await this.authService.register(body);
-      return pick(registeredUser, ['email', 'name', 'lastname', 'id']);
+      return {
+        token: await this.authService.createToken(registeredUser),
+        user: pick(registeredUser, ['email', 'name', 'lastname', 'id']),
+      }
     } catch (exception) {
       if (exception instanceof AuthenticationError) {
         throw new BadRequestException({

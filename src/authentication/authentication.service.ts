@@ -43,10 +43,11 @@ export class AuthenticationService {
   }
 
 
-  private async createToken(user: User): Promise<UserToken> {
+  async createToken(user: User): Promise<UserToken> {
     const jwtPayload: IJwtPayload = {
       id: user.id
     };
+    //const jwtPayload = { username: user.email, sub: user.id };
     return {
       accessToken: this.jwtService.sign(jwtPayload),
       refreshToken: (await this.generateRefreshToken(user)).token,
