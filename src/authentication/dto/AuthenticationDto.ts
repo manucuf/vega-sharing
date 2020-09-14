@@ -7,6 +7,14 @@ export class LoginPayloadDto {
   password: string;
 }
 
+export class SignupPayloadDto {
+  email: string;
+  username: string;
+  password: string;
+  name: string;
+  lastname: string;
+}
+
 
 export class UserPayloadResponseDto {
   user: SafeUser;

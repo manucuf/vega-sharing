@@ -58,7 +58,7 @@ export class AuthenticationController {
     } catch (exception) {
       if (exception instanceof AuthenticationError) {
         throw new BadRequestException({
-          message: exception.message,
+          message: [exception.message],
           type: exception.type
         })
       } else {
