@@ -5,7 +5,6 @@ import {
   InternalServerErrorException,
   BadRequestException,
   NotFoundException,
-  Param,
   Post,
   Query, Req, UseGuards,
 } from '@nestjs/common';

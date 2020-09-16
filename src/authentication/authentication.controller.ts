@@ -1,9 +1,12 @@
- import { BadRequestException, Body, Controller, InternalServerErrorException, Post } from '@nestjs/common';
+import { BadRequestException, Body, Controller, InternalServerErrorException, Post } from '@nestjs/common';
 import { AuthenticationService} from './authentication.service';
-import { IRefreshToken, UserToken } from '../types';
 import { pick } from 'lodash';
- import { LoginPayloadDto, UserPayloadResponseDto, UserPayloadDto } from './dto/AuthenticationDto';
- import { AuthenticationError } from './AuthenticationError';
+import { AuthenticationError } from './AuthenticationError';
+import { LoginPayloadDto } from './dto/LoginPayloadDto';
+import { UserPayloadResponseDto } from './dto/UserPayloadResponseDto';
+import { RefreshTokenDto } from './dto/RefreshTokenDto';
+import { UserTokenDto } from './dto/UserTokenDto';
+import { UserPayloadDto } from './dto/UserPayloadDto';
 
 @Controller('authentication')
 export class AuthenticationController {
@@ -17,7 +20,7 @@ export class AuthenticationController {
       const { user, token } = await this.authService.login(loginPayload.email, loginPayload.password);
       return {
         token,
-        user: pick(user, ['email', 'name', 'lastname', 'id']),
+        user: pick(user, ['email', 'name', 'lastname', '_id']),
       }
     } catch (exception) {
       if (exception instanceof AuthenticationError) {
@@ -32,7 +35,7 @@ export class AuthenticationController {
   }
 
   @Post('refresh-token')
-  async refresh(@Body() refreshToken: IRefreshToken): Promise<UserToken> {
+  async refresh(@Body() refreshToken: RefreshTokenDto): Promise<UserTokenDto | undefined> {
     try {
       return await this.authService.refreshAccessToken(refreshToken);
     } catch (exception) {
@@ -48,12 +51,12 @@ export class AuthenticationController {
   }
 
   @Post('register')
-  async register(@Body() body: UserPayloadDto) {
+  async register(@Body() body: UserPayloadDto): Promise<UserPayloadResponseDto | undefined> {
     try {
-      const registeredUser = await this.authService.register(body);
+      const { user, token } = await this.authService.register(body.name, body.lastname, body.password, body.email);
       return {
-        token: await this.authService.createToken(registeredUser),
-        user: pick(registeredUser, ['email', 'name', 'lastname', 'id']),
+        token,
+        user: pick(user, ['email', 'name', 'lastname', '_id'])
       }
     } catch (exception) {
       if (exception instanceof AuthenticationError) {
