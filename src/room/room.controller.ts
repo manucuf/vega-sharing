@@ -20,6 +20,15 @@ export class RoomController {
 
   constructor(private readonly roomService: RoomService) {}
 
+  /**
+   * POST /rooms/create
+   * Allows the user to create a new room passing as body: name, description, user ids and creator id.
+   * Returns the Room data.
+   * Returns an error if the creator id is not existing.
+   * A valid access token in Authorization header is required, otherwise it returns an unauthorized error
+   * @param body
+   * @return Promise<Room>
+   */
   @UseGuards(JwtAuthGuard)
   @Post('create')
   async create(@Body() body: RoomDto): Promise<Room> {
@@ -37,6 +46,14 @@ export class RoomController {
     }
   }
 
+  /**
+   * GET /rooms?userId=ex4mp1e
+   * It allows the user to get all the rooms in which he is involved, passing his Id as parameter.
+   * It returns an array of Rooms or an empty array if the user isn't in any Room.
+   * It's required a valid access token, otherwise an unauthorized error is returned.
+   * @param res
+   * @param params
+   */
   @UseGuards(JwtAuthGuard)
   @Get('/')
   async getRoomsByUserId(@Req() res, @Query() params): Promise< Pick<Room, "_id" | "name" | "description" | "creator" | "users">[]> {
