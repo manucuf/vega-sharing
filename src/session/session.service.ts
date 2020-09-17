@@ -1,11 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { Session } from './schema/session.schema';
-import { SessionDto } from './dto/SessionDto';
 import { SessionError, ErrorType } from './SessionError';
 import { Model } from 'mongoose';
-import {User} from '../user/schema/user.schema'
 import { InjectModel } from '@nestjs/mongoose';
-import { SafeUser} from '../types';
 import { ObjectId } from 'bson'
 import { UserService } from '../user/user.service';
 import { RoomService } from 'src/room/room.service';
@@ -41,7 +38,6 @@ export class SessionService {
         } else {
           throw new SessionError("Declared creatorId is not in the room with roomId", ErrorType.USER_NOT_IN_THE_ROOM);
         }
-        
             
     }
 
@@ -57,7 +53,6 @@ export class SessionService {
             ...session,
             creator: pick(session.creator, ['_id', 'name', 'lastname', 'email'])
           }));
-          return retrievedSessions;
         } else {
           return undefined;
         }

@@ -25,7 +25,7 @@ import { RefreshToken, RefreshTokenSchema } from './schema/refreshToken.schema';
               signOptions: { expiresIn: '60s' },
             }),*/
             MongooseModule.forFeature([{ name: RefreshToken.name, schema: RefreshTokenSchema }]),
-          PassportModule.register({ defaultStrategy: 'jwt', session: false}),
+            PassportModule.register({ defaultStrategy: 'jwt', session: false}),
            ],
   providers: [AuthenticationService, JwtStrategy],
   exports: [AuthenticationService],

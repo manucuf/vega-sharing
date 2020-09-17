@@ -4,14 +4,14 @@ import { InjectModel } from '@nestjs/mongoose';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '../user/schema/user.schema';
 import { UserService } from '../user/user.service';
-import { IJwtPayload, IRefreshToken, UserToken } from '../types';
 import { RefreshToken } from './schema/refreshToken.schema';
-
+import { IToken } from './interface/IToken';
 import * as crypto from 'crypto';
 import * as moment from 'moment';
 import { AuthenticationError, ErrorType } from './AuthenticationError';
-import { UserPayloadDto } from './dto/AuthenticationDto';
 import { ConfigService } from '@nestjs/config';
+import { IJwtPayload } from './interface/IJwtPayload';
+import { IRefreshToken } from './interface/IRefreshToken';
 
 @Injectable()
 export class AuthenticationService {
@@ -22,16 +22,20 @@ export class AuthenticationService {
     @InjectModel(RefreshToken.name) private refreshTokenModel: Model<RefreshToken>)  {}
 
 
-  async register(userPayload: UserPayloadDto): Promise<User> {
-    const foundUser = await this.userService.findByEmail(userPayload.email);
+  async register(name: string, lastname: string, password: string, email: string): Promise<{user: User, token: IToken} | undefined> {
+    const foundUser = await this.userService.findByEmail(email);
     if(foundUser) {
       throw new AuthenticationError('User already existing', ErrorType.EMAIL_ALREADY_TAKEN); 
     } else {
-      return await this.userService.create(userPayload);
+      const createdUser = await this.userService.create(name, lastname, password, email);
+      return {
+        user: createdUser,
+        token: await this.createToken(createdUser)
+      }
     }
   }
 
-  async login(email: string, password: string): Promise<{user: User, token: UserToken} | undefined> {
+  async login(email: string, password: string): Promise<{user: User, token: IToken} | undefined> {
     const user = await this.userService.findUserByEmailAndPassword(email, password);
     if (user) return {
       user,
@@ -42,8 +46,7 @@ export class AuthenticationService {
     }
   }
 
-
-  async createToken(user: User): Promise<UserToken> {
+  async createToken(user: User): Promise<IToken> {
     const jwtPayload: IJwtPayload = {
       id: user.id
     };
@@ -56,10 +59,10 @@ export class AuthenticationService {
     };
   }
 
-  public async refreshAccessToken(dto: IRefreshToken): Promise<UserToken> {
+  public async refreshAccessToken(refreshToken: IRefreshToken): Promise<IToken> {
 
     const result = await this.refreshTokenModel.findOne({
-      token: dto.token
+      token: refreshToken.token
       //userId: new ObjectId(dto.userId),
     });
 

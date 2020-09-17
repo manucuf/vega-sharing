@@ -3,7 +3,6 @@ import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { User } from './schema/user.schema';
 import * as bcrypt from 'bcrypt';
-import { UserPayloadDto } from './dto/UserPayloadDto';
 import { pick } from 'lodash';
 
 @Injectable()
@@ -12,17 +11,22 @@ export class UserService {
   constructor(
     @InjectModel(User.name) private userModel: Model<User>) {}
 
-  private static async passwordMatches(user, password): Promise<boolean> {
+  private static async passwordMatches(user: User, password: string): Promise<boolean> {
     return bcrypt.compare(password, user.password);
   }
 
-  private static async hash(password): Promise<string> {
+  private static async hash(password: string): Promise<string> {
     return bcrypt.hash(password, 10);
   }
 
-  async create(userPayload: UserPayloadDto): Promise<User> {
-    userPayload.password = await UserService.hash(userPayload.password);
-    const createdUser = new this.userModel(userPayload);
+  async create(name: string, lastname: string, password: string, email: string): Promise<User | undefined> {
+    const hashedPassword = await UserService.hash(password);
+    const createdUser = new this.userModel({
+      name,
+      lastname,
+      password: hashedPassword,
+      email
+    });
     return createdUser.save();
   }
 
@@ -53,7 +57,7 @@ export class UserService {
     const retrievedUsers = await this.userModel.find({
         $or: [{name: {"$regex": substring, "$options": "i"}}, {lastname: {"$regex": substring, "$options": "i"}}, {email: {"$regex": substring, "$options": "i"}}]
       }
-    );
+    ).limit(20);
 
     if (retrievedUsers) {
       return retrievedUsers.map(u => pick(u, ['_id', 'name', 'lastname', 'email']));
