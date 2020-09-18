@@ -47,7 +47,6 @@ export class SessionService {
           path: 'creator',
           model: 'User',
         }).lean();
-        
         if(retrievedSessions) {
           return retrievedSessions.map((session) => ({
             ...session,
@@ -56,7 +55,15 @@ export class SessionService {
         } else {
           return undefined;
         }
+    }
+
+    async getSessionsByCreatorId(id: string) : Promise< Session[]> {
+      const retrievedSessions = await this.sessionModel.find({creator: new ObjectId(id)});
+      console.log(retrievedSessions);
+      if(retrievedSessions) {
+        return retrievedSessions;
+      } else {
+        return [];
       }
-
-
+    }
 }
