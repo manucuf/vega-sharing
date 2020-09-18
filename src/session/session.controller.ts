@@ -39,7 +39,7 @@ export class SessionController {
     }
 
     @UseGuards(JwtAuthGuard)
-    @Get('/')
+    @Get('room')
     async getSessionsByRoomId(@Req() res, @Query() params): Promise< Pick<Session, "_id" | "name" | "description" | "creator" | "room">[] | undefined> {
         try {
             return await this.sessionService.getSessionsByRoomId(params.roomId);
@@ -48,4 +48,17 @@ export class SessionController {
         }
     }
 
+    @UseGuards(JwtAuthGuard)
+    @Get('creator')
+    async getSessionsByCreatorId(@Req() res, @Query() params): Promise<Session[]> {
+      try {
+        return await this.sessionService.getSessionsByCreatorId(params.creatorId);
+      } catch (ex) {
+        throw new NotFoundException();
+      }
+    }
+
+    
+
+    
 }
