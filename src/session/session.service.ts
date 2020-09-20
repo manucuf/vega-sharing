@@ -60,10 +60,6 @@ export class SessionService {
     async getSessionsByCreatorId(id: string) : Promise< Session[]> {
       const retrievedSessions = await this.sessionModel.find({creator: new ObjectId(id)});
       console.log(retrievedSessions);
-      if(retrievedSessions) {
-        return retrievedSessions;
-      } else {
-        return [];
-      }
+      return retrievedSessions;
     }
 }

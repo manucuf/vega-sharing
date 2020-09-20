@@ -54,7 +54,7 @@ export class SessionController {
       try {
         return await this.sessionService.getSessionsByCreatorId(params.creatorId);
       } catch (ex) {
-        throw new NotFoundException();
+        throw new InternalServerErrorException("Errore sconosciuto: " + ex.message);
       }
     }
 
