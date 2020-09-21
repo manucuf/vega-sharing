@@ -4,10 +4,10 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { AuthenticationController } from './authentication.controller';
 import { UserModule } from '../user/user.module';
 import { JwtModule } from '@nestjs/jwt';
-import { RefreshToken, RefreshTokenSchema } from 'src/authentication/schema/refreshToken.schema';
 import { ConfigService } from '@nestjs/config';
 import { JwtStrategy } from './jwt.strategy';
 import { PassportModule } from '@nestjs/passport';
+import { RefreshToken, RefreshTokenSchema } from './schema/refreshToken.schema';
 
 @Module({
   imports: [UserModule,
