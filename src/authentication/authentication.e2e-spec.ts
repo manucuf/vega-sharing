@@ -1,9 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { AuthenticationModule } from './authentication.module';
-import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AppModule } from '../app.module';
+import { mockUserPayload } from '../../test/data/user';
+import { omit } from 'lodash';
+import mock = jest.mock;
 
 describe('AuthenticationController (e2e)', () => {
   let app: INestApplication;
@@ -17,12 +18,27 @@ describe('AuthenticationController (e2e)', () => {
     await app.init();
   });
 
-  it('/authentication/register (POST)', async done => {
-    const response = await request(app.getHttpServer()).post('/authentication/register');
-    console.log("aaaa", response);
-    expect(response.status).toBe(200);
-    expect(response.body).toBe("Hello World!");
+  describe('POST /authentication/register', function() {
+    it('should return unknown error if no payload is sent', async done => {
+      const response = await request(app.getHttpServer()).post('/authentication/register');
+      expect(response.status).toBe(500);
+      expect(response.body).toHaveProperty('message');
+      expect(response.body.message).toBe('Errore sconosciuto');
 
-    done();
-  });
+      done();
+    });
+    it('should return validation error if no name is sent', async done => {
+      const response = await request(app.getHttpServer())
+        .post('/authentication/register')
+        .send(JSON.stringify(omit(mockUserPayload, ['name'])))
+
+      console.log(response.body);
+      expect(response.status).toBe(500);
+      expect(response.body).toHaveProperty('message');
+      expect(response.body.message).toBe('Errore sconosciuto');
+
+      done();
+    })
+  })
+
 });

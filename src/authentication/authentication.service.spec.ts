@@ -10,6 +10,7 @@ import { UserService } from '../user/user.service';
 import { MockUserService } from '../../test/mocks/MockUserService';
 import { mockUserPayload } from '../../test/data/user';
 import { AuthenticationError } from './AuthenticationError';
+import mock = jest.mock;
 
 
 
@@ -58,10 +59,11 @@ describe('AuthenticationService', () => {
       createMockSpy.mockReturnValueOnce(mockUserPayload as any);
 
 
-      const result = await service.register(mockUserPayload);
+      const result = await service.register( mockUserPayload.name, mockUserPayload.lastname, mockUserPayload.email, mockUserPayload.password, mockUserPayload.username);
       expect(findByEmailSpy).toHaveBeenCalledTimes(1);
       expect(createMockSpy).toHaveBeenCalledTimes(1);
-      expect(result).toHaveProperty('name', mockUserPayload.name);
+      expect(result.user).toHaveProperty('name', mockUserPayload.name);
+      expect(result.token).toHaveProperty('accessToken');
     })
 
     it('should throw AuthenticationError Exception if findByEmail returns existent user', async () => {
@@ -69,7 +71,7 @@ describe('AuthenticationService', () => {
       createMockSpy.mockReturnValueOnce(mockUserPayload as any);
 
       const call = async () => {
-        return await service.register(mockUserPayload);
+        return await service.register( mockUserPayload.name, mockUserPayload.lastname, mockUserPayload.email, mockUserPayload.password, mockUserPayload.username);
       }
       await expect(call())
         .rejects

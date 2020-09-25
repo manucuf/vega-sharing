@@ -78,10 +78,10 @@ export class AuthenticationController {
   @Post('register')
   async register(@Body() body: UserPayloadDto): Promise<UserPayloadResponseDto | undefined> {
     try {
-      const { user, token } = await this.authService.register(body.name, body.lastname, body.password, body.email);
+      const { user, token } = await this.authService.register(body.name, body.lastname, body.password, body.email, body.username);
       return {
         token,
-        user: pick(user, ['email', 'name', 'lastname', '_id'])
+        user: pick(user, ['username', 'email', 'name', 'lastname', '_id'])
       }
     } catch (exception) {
       if (exception instanceof AuthenticationError) {

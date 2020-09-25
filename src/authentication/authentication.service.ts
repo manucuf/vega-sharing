@@ -22,12 +22,12 @@ export class AuthenticationService {
     @InjectModel(RefreshToken.name) private refreshTokenModel: Model<RefreshToken>)  {}
 
 
-  async register(name: string, lastname: string, password: string, email: string): Promise<{user: User, token: IToken} | undefined> {
+  async register(name: string, lastname: string, password: string, email: string, username: string): Promise<{user: User, token: IToken} | undefined> {
     const foundUser = await this.userService.findByEmail(email);
     if(foundUser) {
       throw new AuthenticationError('User already existing', ErrorType.EMAIL_ALREADY_TAKEN); 
     } else {
-      const createdUser = await this.userService.create(name, lastname, password, email);
+      const createdUser = await this.userService.create(name, lastname, password, email, username );
       return {
         user: createdUser,
         token: await this.createToken(createdUser)

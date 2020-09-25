@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { RoomService } from './room.service';
 
-describe('RoomService', () => {
+describe.skip('RoomService', () => {
   let service: RoomService;
 
   beforeEach(async () => {

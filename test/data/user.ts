@@ -7,4 +7,5 @@ export const mockUserPayload: UserPayloadDto = {
   lastname: "Bar",
   email: "foobar@mail.com",
   password: USER_PASSWORD,
+  username: "BestUsername"
 };

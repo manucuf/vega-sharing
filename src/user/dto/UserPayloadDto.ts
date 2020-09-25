@@ -3,4 +3,5 @@ export class UserPayloadDto {
     lastname: string;
     password: string;
     email: string;
+    username: string;
   }

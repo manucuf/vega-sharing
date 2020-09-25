@@ -5,8 +5,8 @@ import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { ObjectId } from 'bson'
 import { UserService } from '../user/user.service';
-import { RoomService } from 'src/room/room.service';
 import { pick } from 'lodash';
+import { RoomService } from '../room/room.service';
 
 @Injectable()
 export class SessionService {

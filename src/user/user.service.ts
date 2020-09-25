@@ -19,13 +19,14 @@ export class UserService {
     return bcrypt.hash(password, 10);
   }
 
-  async create(name: string, lastname: string, password: string, email: string): Promise<User | undefined> {
+  async create(name: string, lastname: string, password: string, email: string, username: string): Promise<User | undefined> {
     const hashedPassword = await UserService.hash(password);
     const createdUser = new this.userModel({
       name,
       lastname,
       password: hashedPassword,
-      email
+      email,
+      username,
     });
     return createdUser.save();
   }

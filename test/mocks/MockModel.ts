@@ -1,4 +1,9 @@
 
 export class MockModel {
-  save() {}
+  private props: object;
+
+  constructor(props = {}) {
+    this.props = props;
+  }
+  save() { return this.props; }
 }

@@ -9,4 +9,6 @@ export class UserPayloadDto {
   password: string;
   @IsEmail()
   email: string;
+
+  username: string;
 }
